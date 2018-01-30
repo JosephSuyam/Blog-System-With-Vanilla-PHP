@@ -7,40 +7,51 @@ use Illuminate\Http\Request;
 class Fun extends Controller
 {
     public function viewBlogs(){
-		$sql = "SELECT google_name, blog_id, blog_title, blog_date, allow FROM google_users JOIN blog ON google_users.google_id=blog.blogger_id WHERE allow=1;";
-		$result = mysql_query($sql);
-		if($result){
-			while($row=mysql_fetch_array($result)){
-				$_SESSION['blog_title'] = $row['blog_title'];
-				echo '<div style="font-size:18px;"><form method="GET" action="view_blog.php"><input type="hidden" name="blog_id" value="'.$row['blog_id'].'"><input type="hidden" name="blog_title" value="'.$row['blog_title'].'"><button type="submit" class="submitbutton" style = "font-size: 30px;">'.$row['blog_title'].'</button></form> <cite style="margin-left: 20px;">by</cite> '.$row['google_name'].'&nbsp;&nbsp;<span style="color: #afafaf;">'.$this->compDates($row['blog_date']).'</span></div>';
-			}
-		}else{
-			die(mysql_error());
-		}
+
+		$blog = \DB::table('users')
+		->select('name', 'blog_id', 'blog_title', 'blog_date', 'allow')
+		->join('blog', 'users.id', '=', 'blog.blogger_id')
+		->get();
+
+		echo $blog."<br><br>";
+		var_dump($blog);
+
+		// $_SESSION['blog_title'] = $blog->;
+
+		// $_SESSION['blog_title'] = $row['blog_title'];
+		// echo '<div style="font-size:18px;"><form method="GET" action="view_blog.php"><input type="hidden" name="blog_id" value="'.$row['blog_id'].'"><input type="hidden" name="blog_title" value="'.$row['blog_title'].'"><button type="submit" class="submitbutton" style = "font-size: 30px;">'.$row['blog_title'].'</button></form> <cite style="margin-left: 20px;">by</cite> '.$row['name'].'&nbsp;&nbsp;<span style="color: #afafaf;">'.$this->compDates($row['blog_date']).'</span></div>';
+
 	}
 
 	public function openBlog($id){
-		$sql = "SELECT google_name, blog_id, blog_title, blog, blog_date FROM google_users JOIN blog ON google_users.google_id=blog.blogger_id WHERE blog_id='$id';";
-		$result = mysql_query($sql);
-		if($result){
-			while($row=mysql_fetch_array($result)){
-				echo '<div style="font-size: 20px;"><h1>'.$row['blog_title'].'</h1><hr class="hrstyle">
-					<cite>by</cite> '.$row['google_name'].' <span style="color: #afafaf;">'.$this->compDates($row['blog_date']).'</span><br>
-					'.$row['blog'].'</div><br>';
+		// $sql = "SELECT name, blog_id, blog_title, blog, blog_date FROM users JOIN blog ON users.id=blog.blogger_id WHERE blog_id='$id';";
+		// $result = mysql_query($sql);
+		// if($result){
+		// 	while($row=mysql_fetch_array($result)){
+		// 		echo '<div style="font-size: 20px;"><h1>'.$row['blog_title'].'</h1><hr class="hrstyle">
+		// 			<cite>by</cite> '.$row['name'].' <span style="color: #afafaf;">'.$this->compDates($row['blog_date']).'</span><br>
+		// 			'.$row['blog'].'</div><br>';
 
-				$qry = "SELECT commentor_name, comment, comment_date FROM comment JOIN blog ON comment.commented_blog=blog.blog_id WHERE blog_id='$id';";
-				$result2 = mysql_query($qry);
-				if($result2){
-					echo '<div style="margin-left: 15px;"><h3>Comments:</h3>';
-					while($row2=mysql_fetch_array($result2)){
-						echo '<div style="font-size: 18px;"><img src="../img/user.png" style="width: 25px; margin-bottom: 5px;"/>&nbsp;&nbsp;'.$row2['commentor_name'].' said '.$row2['comment'].' <span style="color: #afafaf;">'.$this->compDates($row2['comment_date']).'</span></div>';
-					}
-					echo "</div>";
-				}
-			}
-		}else{
-			die(mysql_error());
-		}
+		// 		$qry = "SELECT commentor_name, comment, comment_date FROM comment JOIN blog ON comment.commented_blog=blog.blog_id WHERE blog_id='$id';";
+		// 		$result2 = mysql_query($qry);
+		// 		if($result2){
+		// 			echo '<div style="margin-left: 15px;"><h3>Comments:</h3>';
+		// 			while($row2=mysql_fetch_array($result2)){
+		// 				echo '<div style="font-size: 18px;"><img src="../img/user.png" style="width: 25px; margin-bottom: 5px;"/>&nbsp;&nbsp;'.$row2['commentor_name'].' said '.$row2['comment'].' <span style="color: #afafaf;">'.$this->compDates($row2['comment_date']).'</span></div>';
+		// 			}
+		// 			echo "</div>";
+		// 		}
+		// 	}
+		// }else{
+		// 	die(mysql_error());
+		// }
+
+		$blog = \DB::table('users')
+		->select('name', 'blog_id', 'blog_title', 'blog', 'blog_date')
+		->join('blog', 'users.id', '=', 'blog.blogger_id')
+		->where('blog_id', '=', '')
+		->get();
+
 	}
 
 	public function comment($commented_blog, $commentor_name, $comment){
@@ -52,6 +63,11 @@ class Fun extends Controller
 		}else{
 			die("ERROR ".mysql_error());
 		}return $success;
+
+		$qry = \DB::table('users')
+		->insert(
+			['commented_blog' => '', 'commentor_name' => 'comment', '' => '', 'comment_date' => '']
+			)
 	}
 
 	public function showMyBlogs($pr){
@@ -136,7 +152,7 @@ class Fun extends Controller
 
 	public function enableUser($prid){
 		$success = false;
-		$sql="UPDATE google_users SET access=1 WHERE google_id='$prid';";
+		$sql="UPDATE users SET access=1 WHERE id='$prid';";
 		$result = mysql_query($sql);
 		if($result){
 			$success = true;
@@ -147,7 +163,7 @@ class Fun extends Controller
 
 	public function disableUser($prid){
 		$success = false;
-		$sql="UPDATE google_users SET access=0 WHERE google_id='$prid';";
+		$sql="UPDATE users SET access=0 WHERE id='$prid';";
 		$result = mysql_query($sql);
 		if($result){
 			$success = true;
@@ -169,7 +185,7 @@ class Fun extends Controller
 
 	public function checkUtype($prid){
 		$success = false;
-		$sql = "SELECT user_type FROM google_users WHERE google_id = '$prid';";
+		$sql = "SELECT user_type FROM users WHERE id = '$prid';";
 		$result = mysql_query($sql);
 		if($result){
 			$res = mysql_result($result, 0);
@@ -179,11 +195,11 @@ class Fun extends Controller
 	}
 
 	public function viewAuthors(){
-		$sql="SELECT google_id, google_name, date_join FROM google_users;";
+		$sql="SELECT id, name, date_join FROM users;";
 		$result=mysql_query($sql);
 		if($result){
 			while($row=mysql_fetch_array($result)){
-				echo '<form method="POST" action="admin_process.php"><strong>'.$row['google_name'].' </strong><cite>joined '.$this->compDates($row['date_join']).'</cite>&nbsp;&nbsp;<strong>(&nbsp;<button type="submit" name="enable" class="nbutt">Enable</button>&nbsp;&nbsp;/&nbsp;&nbsp;<button type="submit" name="disable" class="nbutt">Disable</button>&nbsp;)</strong><input type="hidden" name="google_id" value="'.$row['google_id'].'"></form>';
+				echo '<form method="POST" action="admin_process.php"><strong>'.$row['name'].' </strong><cite>joined '.$this->compDates($row['date_join']).'</cite>&nbsp;&nbsp;<strong>(&nbsp;<button type="submit" name="enable" class="nbutt">Enable</button>&nbsp;&nbsp;/&nbsp;&nbsp;<button type="submit" name="disable" class="nbutt">Disable</button>&nbsp;)</strong><input type="hidden" name="id" value="'.$row['id'].'"></form>';
 			}
 		}else{
 			die(mysql_error());
@@ -191,7 +207,7 @@ class Fun extends Controller
 	}
 
 	public function disableBlogs(){
-		$sql="SELECT blog_id, blog_title, google_name, blog_date FROM blog JOIN google_users ON blog.blogger_id=google_users.google_id;";
+		$sql="SELECT blog_id, blog_title, name, blog_date FROM blog JOIN users ON blog.blogger_id=users.id;";
 		$result=mysql_query($sql);
 		if($result){
 			while($row=mysql_fetch_array($result)){

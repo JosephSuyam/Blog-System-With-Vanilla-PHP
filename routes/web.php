@@ -18,3 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/MySQLConn', 'MySQLConn@connect');
+Route::get('/viewblog', 'Fun@viewBlogs');
+Route::get('/Test', 'Test@index');
