@@ -29,7 +29,8 @@
                     </div><!--panel-->
                 </div>
                 <div class="col-sm-7">
-                    <form method="POST" action="">
+                    <form method="POST" action="{{ $blog->blog_id }}/addBlog">
+                        {{ csrf_field() }}
                         <div class = "panel panel-default" style="min-width: 65%;">
                             <div class = "panel-heading" style="background-color: #FFFFFF   ;">
                                 <input type="text" name="blog_title" placeholder="New Blog Title" value="{{ (isset($blog->blog_title)) ? $blog->blog_title : '' }}" style="width: 100%; font-size: 30px; outline: none; border: 0;" placeholder="New blog title here...">
@@ -38,7 +39,7 @@
                                 <textarea name="blog" placeholder="Write your new blog here..." style="width: 100%; font-size: 20px; margin-top: 12px; height: 275px; resize: vertical; outline: none; border: 0;" placeholder="Write your new blog here...">{{ (isset($blog->blog)) ? $blog->blog : '' }}</textarea>
                             </div><!--panel-body-->
                         </div><!--panel-->
-                        <input type="hidden" name="blog_id" value="<?PHP echo (isset($_POST['blog_id']) ? $_POST['blog_id'] : "Blog Title" ) ?>">
+                        <input type="hidden" name="blog_id" value="{{ $blog->blog_id }}">
                         <button type="submit" name="delete" class="btn btn-outline-danger">Delete</button>
                         <div class="dropdown" style = "width: 125px; float: right; margin-right: 25px;">
                             <button class="btn btn-outline-success dropdown-toggle" type="button" data-toggle="dropdown">Publish Settings&nbsp;<span class="caret"></span></button>

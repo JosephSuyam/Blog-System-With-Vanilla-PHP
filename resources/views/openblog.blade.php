@@ -41,21 +41,20 @@
             <a href="javascript:history.go(-1)"><button class="btn btn-danger" style="float: right;">Go to Previous Page</button></a>
             <!-- SHOW THE SELECTED BLOG-->
             @foreach($users as $blog)
-                <div style="font-size: 20px;"><h1>{{ $blog->blog_title }}</h1><hr class="hrstyle">
-                    <cite>by</cite> {{ $blog->name }} <span style="color: #afafaf;">{{ $blog->blog_date }}</span><br>
-                {{ $blog->blog }}</div><br>
             @endforeach
-            @if(isset($comment))
-                @foreach($comment as $comments)
-                    <div style="font-size: 18px;"><img src="../img/user.png" style="width: 25px; margin-bottom: 5px;"/>&nbsp;&nbsp;{{ $comments->commentor_name }} said {{ $comments->comment }} <span style="color: #afafaf;"> $comments->comment_date </span></div>
-                @endforeach
-            @endif
+            <div style="font-size: 20px;"><h1>{{ $blog->blog_title }}</h1><hr class="hrstyle">
+                <cite>by</cite> {{ $blog->name }} <span style="color: #afafaf;">{{ $blog->blog_date }}</span><br>
+            {{ $blog->blog }}</div><br>
+
+            @foreach($users as $comments)
+                <div style="font-size: 18px;"><img src="/img/user.png" style="width: 25px; margin-bottom: 5px;"/>&nbsp;&nbsp;{{ $comments->commentor_name }} said {{ $comments->comment }} <cite style="color: #afafaf;"> $comments->comment_date </cite></div>
+            @endforeach
             <div style="margin-left: 15px;"><h3>Leave a comment:</h3>
             <form method="POST" action="{{ $blog->blog_id }}/comment">
                 {{ csrf_field() }}
                 <input type="text" name="commentor_name" placeholder="Name" required>
                 <input type="textarea" name="comment" placeholder="Write your comment here..." style="width: 20%;" required>
-                <input type="hidden" name="commented_blog" value="$blog->blog_id">
+                <input type="hidden" name="commented_blog" value="{{ $blog->blog_id }}">
                 <input type="hidden" name="blog_title" value="{{ $blog->blog_title }}">
                 <button type="submit">Send Comment</button>
             </form><br>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Model;
+use Illuminate\Support\Facades\Input;
+
 
 class Fun extends Controller
 {
@@ -41,20 +43,12 @@ class Fun extends Controller
 
 	public function openBlog2($id){
 		$users = \DB::table('users')
-		->select('name', 'blog_id', 'blog_title', 'blog', 'blog_date', 'allow')
+		->select('name', 'blog_id', 'blog_title', 'blog', 'blog_date', 'allow', 'commentor_name', 'comment', 'comment_date')
 		->join('blog', 'users.id', '=', 'blog.blogger_id')
+		->join('comment', 'blog.blog_id', '=', 'comment.commented_blog')
 		->where('blog_id', '=', $id)
 		->get();
-
 		return view('openblog', compact('users'));
-		// $b = \App\Model\TblBlogs::findAll();
-		// foreach ($$b as $value) {
-		// 	echo $value->name;
-		// 	$comment = $value->TblComment;
-		// 	foreach ($comment as  $value) {
-		// 		echo $value->name;
-		// 	}
-		// }
 	}
 
 	public function showComment($id){
@@ -75,30 +69,73 @@ class Fun extends Controller
 		// }
 	}
 
-// old
-	public function comment($commented_blog, $commentor_name, $comment){
-// 		$qry = \DB::table('users')
-// 		->insert(
-// 			['commented_blog' => $commented_blog, 'commentor_name' => $commentor_name, 'comment' => $comment, 'comment_date' => NOW()]
-// 			);
-// die('ok');
-		// return back();
+// CREATE SYNTAX (CHECK ALSO ROUTES/WEB.PHP)
+	public function comment(Request $request){
+		$commented_blog = $request->commented_blog;
+		$commentor_name = $request->commentor_name;
+		$comment = $request->comment;
+		$qry = \DB::table('comment')
+		->insert(
+			['commented_blog' => $commented_blog, 'commentor_name' => $commentor_name, 'comment' => $comment, 'comment_date' => NOW()]
+			);
+		return back();
+	}
 
-		// users::Create([
-		// 		'commented_blog' => $commented_blog,
-		// 	])
-dd( Input::all() );
-		$blog = new Blog;
-		$blog->username = Input::get('username');
-
-		// $comm = new Modle();
-		// $data = $this->validate($request, [
-		// 		'commented_blog'=>'required',
-		// 		'commentor_name'=>'required',
-		// 		'comment'=>'required'
-		// 	]);
-		// $comm->addComment($data);
-		// return redirect('/openblog')->with('success', 'Comment Uploaded');
+	public function addBlog(Request $request){
+		$blog_id = $_POST['blog_id'];
+		$type = gettype($blog_id);
+		$num = "1";
+		$typeint = gettype($num);
+		if($type==$typeint){
+			if(isset($_POST['blog_id']) && !empty($_POST['blog_id'])){
+				if(isset($_POST['delete'])){
+					$blog_id = $request->blog_id;
+					$qry = \DB::table('blog')
+					->where('blog_id', '=', $blog_id)
+					->delete();
+					echo "$blog_id";
+					return back();
+					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Deleted!</strong></div></center>';
+				}elseif(isset($_POST['publish'])){
+					$blog_id = $request->blog_id;
+					DB::table('blog')
+					->where('blog_id', $blog_id)
+					->update(['allow' => 1]);
+					return back();
+					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Published!</strong></div></center>';
+				}elseif(isset($_POST['unpublish'])){
+					$blog_id = $request->blog_id;
+					DB::table('blog')
+					->where('blog_id', $blog_id)
+					->update(['allow' => 0]);
+					return back();
+					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-info alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Unpublished!</strong></div></center>';
+				}elseif(isset($_POST['save'])){
+					$blog_id = $request->blog_id;
+					$blog_title = $request->blog_title;
+					$blog = $request->blog;
+					if(isset($blog_title) && isset($blog) && !empty($blog_title) && !empty($blog)){
+						$qry = \DB::table('blog')
+						->insert(
+							['blog_title' => $blog_title, 'blog' => $blog, 'blogger_id' => $blogger_id, 'blog_date' => NOW(), 'allow' => '1']
+							);
+						return back();
+						// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Your Blog have been Saved!</strong></div></center>';
+					}else{
+						return back();
+						// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-danger alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Please fill up all forms.</strong></div></center>';
+					}
+				}else{
+					die("Check author_panel form");
+				}
+			}else{
+				die("1");
+				return back();
+				// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-danger alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Please select a blog</strong></div></center>';
+			}
+		}else{
+			die('error');
+		}
 	}
 
 	public function showMyBlogs($pr){
