@@ -35,10 +35,12 @@
     </div>
 
 @section('content')
+
+
     
     <div class = "row">
         <div class = "col-sm-12">
-            <a href="javascript:history.go(-1)"><button class="btn btn-danger" style="float: right;">Go to Previous Page</button></a>
+            <a href="/blog/public"><button class="btn btn-danger" style="float: right;">Go to Previous Page</button></a>
             <!-- SHOW THE SELECTED BLOG-->
             @foreach($users as $blog)
             @endforeach
@@ -47,16 +49,18 @@
             {{ $blog->blog }}</div><br>
 
             @foreach($users as $comments)
-                <div style="font-size: 18px;"><img src="/img/user.png" style="width: 25px; margin-bottom: 5px;"/>&nbsp;&nbsp;{{ $comments->commentor_name }} said {{ $comments->comment }} <cite style="color: #afafaf;"> $comments->comment_date </cite></div>
+                <div style="font-size: 18px;"><img src="./img/user.png" style="width: 25px; margin-bottom: 5px;"/>&nbsp;&nbsp;{{ $comments->commentor_name }} said {{ $comments->comment }} <cite style="color: #afafaf;"> {{ compDates($comments->comment_date) }} </cite></div>
             @endforeach
             <div style="margin-left: 15px;"><h3>Leave a comment:</h3>
             <form method="POST" action="{{ $blog->blog_id }}/comment">
                 {{ csrf_field() }}
-                <input type="text" name="commentor_name" placeholder="Name" required>
-                <input type="textarea" name="comment" placeholder="Write your comment here..." style="width: 20%;" required>
-                <input type="hidden" name="commented_blog" value="{{ $blog->blog_id }}">
-                <input type="hidden" name="blog_title" value="{{ $blog->blog_title }}">
-                <button type="submit">Send Comment</button>
+                <div class="row form-group">
+                    <input type="text" name="commentor_name" placeholder="Name" class="form-control" required>
+                    <textarea name="comment" placeholder="Write your comment here..." class="form-control" style="width: 100%; font-size: 20px; margin-top: 12px; height: 275px; resize: vertical;" required></textarea>
+                    <input type="hidden" name="commented_blog" value="{{ $blog->blog_id }}">
+                    <input type="hidden" name="blog_title" value="{{ $blog->blog_title }}">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 12px;">Send Comment</button>
+                </div>
             </form><br>
             </div>
         </div>

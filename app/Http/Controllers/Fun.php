@@ -123,11 +123,12 @@ class Fun extends Controller
 				}elseif(isset($_POST['saveButton'])){
 					$blog_id = $request->blog_id;
 					$blog_title = $request->blog_title;
-					$blog = $request->blog;
+					$blog = $request->blog;$user_stuff = auth()->user();
+					$user_id = $user_stuff->id;
 					if(isset($blog_title) && isset($blog) && !empty($blog_title) && !empty($blog)){
 						$qry = \DB::table('blog')
 						->insert(
-							['blog_title' => $blog_title, 'blog' => $blog, 'blogger_id' => $blogger_id, 'blog_date' => NOW(), 'allow' => '1']
+							['blog_title' => $blog_title, 'blog' => $blog, 'blogger_id' => $user_id, 'blog_date' => NOW(), 'allow' => '1']
 							);
 						return redirect()->to('/home');
 						// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Your Blog have been Saved!</strong></div></center>';
