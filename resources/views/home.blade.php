@@ -48,7 +48,7 @@
                                 <li><input type = "submit" value = "Unpublish" name="unpublish" id = "" class = "btn btn-outline-success" style = " display: inline-block; width: 100%;"/></li>
                             </ul>
                         </div>
-                        <button type="submit" name="save" class="btn btn-outline-info" style="float: right; margin-right: 20px;">Save</button>
+                        <button type="submit" name="saveButton" class="btn btn-outline-info" style="float: right; margin-right: 20px;">Save</button>
                     </form>
                 </div>
             </div>

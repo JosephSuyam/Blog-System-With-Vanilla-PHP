@@ -25,7 +25,7 @@ Route::get('', 'Fun@viewBlogs2');
 
 Route::get('/openblog/{blog_id}', 'Fun@openBlog2');
 
-Route::get('/home', 'Fun@viewBlogs');
+Route::get('/home', 'Fun@showMyBlogs');
 
 Route::get('/home/{blog_id}', 'Fun@openBlog');
 

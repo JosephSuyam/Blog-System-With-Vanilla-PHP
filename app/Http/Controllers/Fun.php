@@ -31,6 +31,17 @@ class Fun extends Controller
 		return view('welcome', compact('users'));
 	}
 
+	public function showMyBlogs(){
+		$user_stuff = auth()->user();
+		$user_id = $user_stuff->id;
+		$users = \DB::table('blog')
+		->select('blog.*')
+		->where('blogger_id', '=', $user_id)
+		->get();
+
+		return view('home', compact('users'));
+	}
+
 	public function openBlog($id){
 		$users = \DB::table('users')
 		->select('name', 'blog_id', 'blog_title', 'blog', 'blog_date', 'allow')
@@ -93,24 +104,23 @@ class Fun extends Controller
 					$qry = \DB::table('blog')
 					->where('blog_id', '=', $blog_id)
 					->delete();
-					echo "$blog_id";
-					return back();
+					return redirect()->to('/home');
 					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Deleted!</strong></div></center>';
 				}elseif(isset($_POST['publish'])){
 					$blog_id = $request->blog_id;
-					DB::table('blog')
+					$qry = \DB::table('blog')
 					->where('blog_id', $blog_id)
 					->update(['allow' => 1]);
-					return back();
+					return redirect()->to('/home');
 					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Published!</strong></div></center>';
 				}elseif(isset($_POST['unpublish'])){
 					$blog_id = $request->blog_id;
-					DB::table('blog')
+					$qry = \DB::table('blog')
 					->where('blog_id', $blog_id)
 					->update(['allow' => 0]);
-					return back();
+					return redirect()->to('/home');
 					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-info alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Unpublished!</strong></div></center>';
-				}elseif(isset($_POST['save'])){
+				}elseif(isset($_POST['saveButton'])){
 					$blog_id = $request->blog_id;
 					$blog_title = $request->blog_title;
 					$blog = $request->blog;
@@ -119,10 +129,10 @@ class Fun extends Controller
 						->insert(
 							['blog_title' => $blog_title, 'blog' => $blog, 'blogger_id' => $blogger_id, 'blog_date' => NOW(), 'allow' => '1']
 							);
-						return back();
+						return redirect()->to('/home');
 						// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Your Blog have been Saved!</strong></div></center>';
 					}else{
-						return back();
+						return redirect()->to('/home');
 						// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-danger alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Please fill up all forms.</strong></div></center>';
 					}
 				}else{
@@ -130,30 +140,12 @@ class Fun extends Controller
 				}
 			}else{
 				die("1");
-				return back();
+				return redirect()->to('/home');
 				// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-danger alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Please select a blog</strong></div></center>';
 			}
 		}else{
 			die('error');
 		}
-	}
-
-	public function showMyBlogs($pr){
-		$sql = "SELECT * FROM blog WHERE blogger_id = '$pr';";
-		$result = mysql_query($sql);
-		if($result){
-			$val = 0;
-			while($row=mysql_fetch_array($result)){
-				echo '<div style="font-size: 25px;"><form method="POST" action="manage_blog.php"><input type="hidden" name="blog_id" value="'.$row['blog_id'].'"/><button type="submit" class="submitbutton" value="'.$row['blog_id'].'" onclick="showBlog(this.value)">'.$row['blog_title'].'</button></form></div>';
-			}
-		}else{
-			die(mysql_error());
-		}
-
-		$qry = \DB::table('blog')
-		->select('blog.*')
-		->where('blogger_id', '=', '')
-		->get();
 	}
 
 	public function showMyBlogs2($pr){
