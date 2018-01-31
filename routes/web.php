@@ -20,5 +20,21 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/MySQLConn', 'MySQLConn@connect');
-Route::get('/viewblog', 'Fun@viewBlogs');
-Route::get('/Test', 'Test@index');
+
+Route::get('', 'Fun@viewBlogs2');
+
+Route::get('/openblog/{blog_id}', 'Fun@openBlog2');
+
+// Route::get('/openblog/{blog_id}', 'Fun@showComment');
+
+Route::get('/home', 'Fun@viewBlogs');
+
+Route::get('/home/{blog_id}', 'Fun@openBlog');
+
+Route::post('/openblog/{blog_id}/comment', function(){array('blog'=>'Fun@comment');});
+// old
+// Route::post('/openblog/{blog_id}/comment', 'Fun@comment');
+// older
+// Route::post('/openblog/{blog_id}/comment', function ($commentor_name, $comment, $commented_blog) {
+//     //
+// });

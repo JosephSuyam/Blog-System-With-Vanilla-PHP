@@ -1,5 +1,7 @@
 @extends('layout')
 
+	<?PHP $pgTitle = "Login"; ?>
+
 	<div id="app">
         <nav class="navbar navbar-default navbar-static-top">
             <div class="navbar-header">
@@ -14,7 +16,7 @@
 
                 <!-- Branding Image -->
                 <a class="navbar-brand" href="http://localhost/blog/public">
-                    My Assessment Blog System
+                    Blog System
                 </a>
             </div>
 
@@ -44,6 +46,13 @@
             <h2>Latest Articles</h2>
             <hr class="hrstyle">
             <!-- show publlish blog list here-->
+ 			@foreach($users as $blog)
+                <li>
+                    <a href="openblog/{{ $blog->blog_id }}">
+                        {{ $blog->blog_title }}
+                    </a>
+                </li>
+            @endforeach
         </div>
     </div>
 

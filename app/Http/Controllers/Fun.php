@@ -4,70 +4,101 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Model;
+
 class Fun extends Controller
 {
     public function viewBlogs(){
-
-		$blog = \DB::table('users')
+		$users = \DB::table('users')
 		->select('name', 'blog_id', 'blog_title', 'blog_date', 'allow')
 		->join('blog', 'users.id', '=', 'blog.blogger_id')
+		->where('allow', '=', 1)
+		->orderBy('blog_date', 'desc')
 		->get();
 
-		echo $blog."<br><br>";
-		var_dump($blog);
+		return view('home', compact('users'));
+	}
 
-		// $_SESSION['blog_title'] = $blog->;
+	public function viewBlogs2(){
+		$users = \DB::table('users')
+		->select('name', 'blog_id', 'blog_title', 'blog_date', 'allow')
+		->join('blog', 'users.id', '=', 'blog.blogger_id')
+		->where('allow', '=', 1)
+		->get();
 
-		// $_SESSION['blog_title'] = $row['blog_title'];
-		// echo '<div style="font-size:18px;"><form method="GET" action="view_blog.php"><input type="hidden" name="blog_id" value="'.$row['blog_id'].'"><input type="hidden" name="blog_title" value="'.$row['blog_title'].'"><button type="submit" class="submitbutton" style = "font-size: 30px;">'.$row['blog_title'].'</button></form> <cite style="margin-left: 20px;">by</cite> '.$row['name'].'&nbsp;&nbsp;<span style="color: #afafaf;">'.$this->compDates($row['blog_date']).'</span></div>';
-
+		return view('welcome', compact('users'));
 	}
 
 	public function openBlog($id){
-		// $sql = "SELECT name, blog_id, blog_title, blog, blog_date FROM users JOIN blog ON users.id=blog.blogger_id WHERE blog_id='$id';";
-		// $result = mysql_query($sql);
-		// if($result){
-		// 	while($row=mysql_fetch_array($result)){
-		// 		echo '<div style="font-size: 20px;"><h1>'.$row['blog_title'].'</h1><hr class="hrstyle">
-		// 			<cite>by</cite> '.$row['name'].' <span style="color: #afafaf;">'.$this->compDates($row['blog_date']).'</span><br>
-		// 			'.$row['blog'].'</div><br>';
-
-		// 		$qry = "SELECT commentor_name, comment, comment_date FROM comment JOIN blog ON comment.commented_blog=blog.blog_id WHERE blog_id='$id';";
-		// 		$result2 = mysql_query($qry);
-		// 		if($result2){
-		// 			echo '<div style="margin-left: 15px;"><h3>Comments:</h3>';
-		// 			while($row2=mysql_fetch_array($result2)){
-		// 				echo '<div style="font-size: 18px;"><img src="../img/user.png" style="width: 25px; margin-bottom: 5px;"/>&nbsp;&nbsp;'.$row2['commentor_name'].' said '.$row2['comment'].' <span style="color: #afafaf;">'.$this->compDates($row2['comment_date']).'</span></div>';
-		// 			}
-		// 			echo "</div>";
-		// 		}
-		// 	}
-		// }else{
-		// 	die(mysql_error());
-		// }
-
-		$blog = \DB::table('users')
-		->select('name', 'blog_id', 'blog_title', 'blog', 'blog_date')
+		$users = \DB::table('users')
+		->select('name', 'blog_id', 'blog_title', 'blog', 'blog_date', 'allow')
 		->join('blog', 'users.id', '=', 'blog.blogger_id')
-		->where('blog_id', '=', '')
+		->where('blog_id', '=', $id)
 		->get();
 
+		return view('home', compact('users'));
 	}
 
-	public function comment($commented_blog, $commentor_name, $comment){
-		$success = false;
-		$sql = "INSERT INTO comment(commented_blog, commentor_name, comment, comment_date) VALUES('$commented_blog', '$commentor_name', '$comment', NOW());";
-		$result = mysql_query($sql);
-		if($result){
-			$success = true;
-		}else{
-			die("ERROR ".mysql_error());
-		}return $success;
+	public function openBlog2($id){
+		$users = \DB::table('users')
+		->select('name', 'blog_id', 'blog_title', 'blog', 'blog_date', 'allow')
+		->join('blog', 'users.id', '=', 'blog.blogger_id')
+		->where('blog_id', '=', $id)
+		->get();
 
-		$qry = \DB::table('users')
-		->insert(
-			['commented_blog' => '', 'commentor_name' => 'comment', '' => '', 'comment_date' => '']
-			)
+		return view('openblog', compact('users'));
+		// $b = \App\Model\TblBlogs::findAll();
+		// foreach ($$b as $value) {
+		// 	echo $value->name;
+		// 	$comment = $value->TblComment;
+		// 	foreach ($comment as  $value) {
+		// 		echo $value->name;
+		// 	}
+		// }
+	}
+
+	public function showComment($id){
+		$users = \DB::table('comment')
+		->select('commentor_name', 'comment', 'comment_date')
+		->join('blog', 'comment.commented_blog', '=', 'blog.blog_id')
+		->where('blog_id', '=', $id)
+		->get();
+
+		return view('openblog', compact('comment'));
+		// $b = \App\Model\TblBlogs::findAll();
+		// foreach ($$b as $value) {
+		// 	echo $value->name;
+		// 	$comment = $value->TblComment;
+		// 	foreach ($comment as  $value) {
+		// 		echo $value->name;
+		// 	}
+		// }
+	}
+
+// old
+	public function comment($commented_blog, $commentor_name, $comment){
+// 		$qry = \DB::table('users')
+// 		->insert(
+// 			['commented_blog' => $commented_blog, 'commentor_name' => $commentor_name, 'comment' => $comment, 'comment_date' => NOW()]
+// 			);
+// die('ok');
+		// return back();
+
+		// users::Create([
+		// 		'commented_blog' => $commented_blog,
+		// 	])
+dd( Input::all() );
+		$blog = new Blog;
+		$blog->username = Input::get('username');
+
+		// $comm = new Modle();
+		// $data = $this->validate($request, [
+		// 		'commented_blog'=>'required',
+		// 		'commentor_name'=>'required',
+		// 		'comment'=>'required'
+		// 	]);
+		// $comm->addComment($data);
+		// return redirect('/openblog')->with('success', 'Comment Uploaded');
 	}
 
 	public function showMyBlogs($pr){
@@ -81,6 +112,11 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}
+
+		$qry = \DB::table('blog')
+		->select('blog.*')
+		->where('blogger_id', '=', '')
+		->get();
 	}
 
 	public function showMyBlogs2($pr){
@@ -96,6 +132,11 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}
+
+		$qry = \DB::table('blog')
+		->select('blog.*')
+		->where('blog_id', '=', '')
+		->get();
 	}
 
 	public function checkBlog(){
@@ -115,6 +156,11 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}return $success;
+
+		$qry = \DB::table('blog')
+		->where('blog_id', '=', '')
+		->delete();
+
 	}
 
 	public function saveBlog($blog_title, $blog, $blogger_id){
@@ -126,6 +172,12 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}return $success;
+
+		$qry = \DB::table('blog')
+		->insert(
+			['blog_title' => '', 'blog' => 'blogger_id', '' => '', 'blog_date' => '', 'allow' => '']
+			);
+
 	}
 
 	public function publish($pr){
@@ -137,6 +189,11 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}return $success;
+
+		// DB::table('blog')
+		// ->where('blog_id', )
+		// ->update(['allow' = ])
+
 	}
 
 	public function unpublish($pr){
@@ -181,6 +238,11 @@ class Fun extends Controller
 		}else{
 			mysql_error();
 		}return $success;
+
+		// $qry = \DB::table('comment')
+		// ->where('comment_id', '=', '')
+		// ->delete();
+
 	}
 
 	public function checkUtype($prid){
@@ -192,6 +254,12 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}return $res;
+
+		// $qry = \DB::table('user_type')
+		// ->select('user_type')
+		// ->where('id', '=', '')
+		// ->get();
+
 	}
 
 	public function viewAuthors(){
@@ -204,6 +272,11 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}
+
+		$qry = \DB::table('users')
+		->select('id', 'name', 'date_join')
+		->get();
+
 	}
 
 	public function disableBlogs(){
@@ -216,6 +289,12 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}
+
+		$qry = \DB::table('blog')
+		->select('blog_id', 'blog_title', 'name', 'blog_date')
+		->join('users', 'blog.blogger_id', '=', 'users.id')
+		->get();
+
 	}
 
 	public function viewComments(){
@@ -228,6 +307,11 @@ class Fun extends Controller
 		}else{
 			die(mysql_error());
 		}
+
+		\DB::table('comment')
+		->select('comment_id', 'commentor_name', 'comment', 'comment_date')
+		->get();
+
 	}
 
 	public function compDates($time){
