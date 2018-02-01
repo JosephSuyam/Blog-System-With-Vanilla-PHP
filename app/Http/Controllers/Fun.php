@@ -17,7 +17,6 @@ class Fun extends Controller
 		->where('allow', '=', 1)
 		->orderBy('blog_date', 'desc')
 		->get();
-
 		return view('home', compact('users'));
 	}
 
@@ -27,19 +26,39 @@ class Fun extends Controller
 		->join('blog', 'users.id', '=', 'blog.blogger_id')
 		->where('allow', '=', 1)
 		->get();
-
 		return view('welcome', compact('users'));
 	}
 
 	public function showMyBlogs(){
-		$user_stuff = auth()->user();
-		$user_id = $user_stuff->id;
-		$users = \DB::table('blog')
-		->select('blog.*')
-		->where('blogger_id', '=', $user_id)
-		->get();
+		if(\Auth::check()){
+			$user_stuff = auth()->user();
+			$user_id = $user_stuff->id;
+			$user_stuff = auth()->user();
+			$user_id = $user_stuff->id;
+			$users = \DB::table('blog')
+			->select('blog.*')
+			->where('blogger_id', '=', $user_id)
+			->get();
+			return view('home', compact('users'));
+		}else{
+			return redirect()->to('/login');
+		}
+	}
 
-		return view('home', compact('users'));
+	public function showMyBlogs2(){
+		if(\Auth::check()){
+			$user_stuff = auth()->user();
+			$user_id = $user_stuff->id;
+			$user_stuff = auth()->user();
+			$user_id = $user_stuff->id;
+			$users = \DB::table('blog')
+			->select('blog.*')
+			->where('blogger_id', '=', $user_id)
+			->get();
+			return view('addblog', compact('users'));
+		}else{
+			return redirect()->to('/login');
+		}
 	}
 
 	public function openBlog($id){
@@ -48,7 +67,6 @@ class Fun extends Controller
 		->join('blog', 'users.id', '=', 'blog.blogger_id')
 		->where('blog_id', '=', $id)
 		->get();
-
 		return view('home', compact('users'));
 	}
 
@@ -62,22 +80,37 @@ class Fun extends Controller
 		return view('openblog', compact('users'));
 	}
 
-	public function showComment($id){
-		$users = \DB::table('comment')
-		->select('commentor_name', 'comment', 'comment_date')
-		->join('blog', 'comment.commented_blog', '=', 'blog.blog_id')
-		->where('blog_id', '=', $id)
+	// public function showComment($id){
+	// 	$users = \DB::table('comment')
+	// 	->select('commentor_name', 'comment', 'comment_date')
+	// 	->join('blog', 'comment.commented_blog', '=', 'blog.blog_id')
+	// 	->where('blog_id', '=', $id)
+	// 	->get();
+	// 	return view('openblog', compact('comment'));
+	// 	// $b = \App\Model\TblBlogs::findAll();
+	// 	// foreach ($$b as $value) {
+	// 	// 	echo $value->name;
+	// 	// 	$comment = $value->TblComment;
+	// 	// 	foreach ($comment as  $value) {
+	// 	// 		echo $value->name;
+	// 	// 	}
+	// 	// }
+	// }
+
+	public function adminPanel(){
+		$users = \DB::table('users')
+		->select('users.*')
 		->get();
 
-		return view('openblog', compact('comment'));
-		// $b = \App\Model\TblBlogs::findAll();
-		// foreach ($$b as $value) {
-		// 	echo $value->name;
-		// 	$comment = $value->TblComment;
-		// 	foreach ($comment as  $value) {
-		// 		echo $value->name;
-		// 	}
-		// }
+		$blog = \DB::table('blog')
+		->select('blog.*', 'name')
+		->join('users', 'blog.blogger_id', '=', 'users.id')
+		->get();
+
+		$comment = \DB::table('comment')
+		->select('comment.*')
+		->get();
+		return view('admin', compact('users', 'blog', 'comment'));
 	}
 
 // CREATE SYNTAX (CHECK ALSO ROUTES/WEB.PHP)
@@ -104,22 +137,22 @@ class Fun extends Controller
 					$qry = \DB::table('blog')
 					->where('blog_id', '=', $blog_id)
 					->delete();
-					return redirect()->to('/home');
 					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Deleted!</strong></div></center>';
+					return redirect()->to('/home');
 				}elseif(isset($_POST['publish'])){
 					$blog_id = $request->blog_id;
 					$qry = \DB::table('blog')
 					->where('blog_id', $blog_id)
 					->update(['allow' => 1]);
-					return redirect()->to('/home');
 					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Published!</strong></div></center>';
+					return redirect()->to('/home');
 				}elseif(isset($_POST['unpublish'])){
 					$blog_id = $request->blog_id;
 					$qry = \DB::table('blog')
 					->where('blog_id', $blog_id)
 					->update(['allow' => 0]);
-					return redirect()->to('/home');
 					// $_SESSION['infomsg'] = '<br><center><div class = "alert alert-info alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Blog Unpublished!</strong></div></center>';
+					return redirect()->to('/home');
 				}elseif(isset($_POST['saveButton'])){
 					$blog_id = $request->blog_id;
 					$blog_title = $request->blog_title;
@@ -130,43 +163,87 @@ class Fun extends Controller
 						->insert(
 							['blog_title' => $blog_title, 'blog' => $blog, 'blogger_id' => $user_id, 'blog_date' => NOW(), 'allow' => '1']
 							);
-						return redirect()->to('/home');
 						// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Your Blog have been Saved!</strong></div></center>';
-					}else{
 						return redirect()->to('/home');
+					}else{
 						// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-danger alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Please fill up all forms.</strong></div></center>';
+						return redirect()->to('/home');
 					}
 				}else{
 					die("Check author_panel form");
 				}
 			}else{
 				die("1");
-				return redirect()->to('/home');
 				// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-danger alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Please select a blog</strong></div></center>';
+				return redirect()->to('/home');
 			}
 		}else{
 			die('error');
 		}
 	}
 
-	public function showMyBlogs2($pr){
-		$sql = "SELECT * FROM blog WHERE blog_id = '$pr';";
-		$result = mysql_query($sql);
-		if($result){
-			while($row=mysql_fetch_array($result)){
-				$_SESSION['sel_blog_title'] = $row['blog_title'];
-				$_SESSION['sel_blog'] = $row['blog'];
-				echo '<form method="POST" action="author_panel.php" id="blog"><input type="hidden" name="blog_title" value="'.$row['blog_title'].'"><input type="hidden" name="blog" value="'.$row['blog'].'"><input type="hidden" name="blog_id" value="'.$row['blog_id'].'"></form>
-					<script>document.getElementById("blog").submit();</script>';
-			}
+	public function newBlog(Request $request){
+		$blog_title = $request->blog_title;
+		$blog = $request->blog;
+		$user_stuff = auth()->user();
+		$user_id = $user_stuff->id;
+		if(isset($blog_title) && isset($blog) && !empty($blog_title) && !empty($blog)){
+			$qry = \DB::table('blog')
+			->insert(
+				['blog_title' => $blog_title, 'blog' => $blog, 'blogger_id' => $user_id, 'blog_date' => NOW(), 'allow' => '1']
+				);
+			return redirect()->to('/addblog');
+			// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-success alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Your Blog have been Saved!</strong></div></center>';
 		}else{
-			die(mysql_error());
+			return redirect()->to('/home');
+			// $_SESSION['errmsg'] = '<br><center><div class = "alert alert-danger alert-dismissable fade in" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>Please fill up all forms.</strong></div></center>';
 		}
+	}
 
-		$qry = \DB::table('blog')
-		->select('blog.*')
-		->where('blog_id', '=', '')
-		->get();
+	public function enableUser(Request $request){
+		$id = $request->id;
+		if(isset($_POST['enable'])){
+			$qry = \DB::table('users')
+			->where('id', $id)
+			->update(['access' => 0]);
+			return redirect()->to('/admin');
+		}elseif(isset($_POST['disable'])){
+			$qry = \DB::table('users')
+			->where('id', $id)
+			->update(['access' => 1]);
+			return redirect()->to('/admin');
+		}else{
+			die('No user selected');
+		}
+	}
+
+	public function blogControl(Request $request){
+		$blog_id = $request->blog_id;
+		if(isset($_POST['publish'])){
+			$qry = \DB::table('blog')
+			->where('blog_id', $blog_id)
+			->update(['allow' => 0]);
+			return redirect()->to('/admin');
+		}elseif(isset($_POST['unpublish'])){
+			$qry = \DB::table('blog')
+			->where('blog_id', $blog_id)
+			->update(['allow' => 1]);
+			return redirect()->to('/admin');
+		}else{
+			die('No blog selected');
+		}
+	}
+
+	public function commentControl(Request $request){
+		$comment_id = $request->comment_id;
+		if(isset($_POST['delete'])){
+			$qry = \DB::table('comment')
+			->where('comment_id', $comment_id)
+			->delete();
+			return redirect()->to('/admin');
+		}else{
+			die('No comment selected');
+		}
 	}
 
 	public function checkBlog(){
@@ -234,28 +311,6 @@ class Fun extends Controller
 			$success = true;
 		}else{
 			die(mysql_error());
-		}return $success;
-	}
-
-	public function enableUser($prid){
-		$success = false;
-		$sql="UPDATE users SET access=1 WHERE id='$prid';";
-		$result = mysql_query($sql);
-		if($result){
-			$success = true;
-		}else{
-			mysql_error();
-		}return $success;
-	}
-
-	public function disableUser($prid){
-		$success = false;
-		$sql="UPDATE users SET access=0 WHERE id='$prid';";
-		$result = mysql_query($sql);
-		if($result){
-			$success = true;
-		}else{
-			mysql_error();
 		}return $success;
 	}
 
@@ -343,51 +398,5 @@ class Fun extends Controller
 		->get();
 
 	}
-
-	public function compDates($time){
-		date_default_timezone_set('Asia/Manila');
-		$start  = date_create($time);
-		$end 	= date_create(); // Current time and date
-		$diff  	= date_diff( $start, $end );
-		if($diff->y==0){
-			if($diff->m==0){
-				if($diff->d==0){
-					if($diff->h==0){
-						if($diff->i==0){
-							$msg = "Just now";
-						}elseif($diff->i==1){
-							$msg = $diff->i." minute ago";
-						}else{
-							$msg = $diff->i." minutes ago";
-						}
-					}elseif($diff->h==1){
-						$msg = $diff->h. " hour ago";
-					}else{
-						$msg = $diff->h. " hours ago";
-					}
-				}elseif($diff->d>7){
-					$days = $diff->d;
-					$weeks = $days/7;
-					$weeks = round($weeks);
-					if($weeks==1){
-						$msg = "$weeks week ago";
-					}else{
-						$msg = "$weeks weeks ago";
-					}
-				}elseif($diff->d==1){
-					$msg = $diff->d." day ago";
-				}else{
-					$msg = $diff->d." days ago";
-				}
-			}elseif($diff->m==1){
-				$msg = $diff->m." month ago";
-			}else{
-				$msg = $diff->m." months ago";
-			}
-		}elseif($diff->y==1){
-			$msg = $diff->y." year ago";
-		}else{
-			$msg = $diff->y." years ago";
-		}return $msg;
-	}
+	
 }

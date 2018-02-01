@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+checkUser(); // from helper
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
@@ -29,7 +31,23 @@ Route::get('/home', 'Fun@showMyBlogs');
 
 Route::get('/home/{blog_id}', 'Fun@openBlog');
 
+Route::get('/addblog', 'Fun@showMyBlogs2');
+
+Route::get('/admin', 'Fun@adminPanel');
+
+// Route::get('/addblog', function(){
+// 	return view('addblog');
+// });
+
 // CREATE
 Route::post('/openblog/{blog_id}/comment', 'Fun@comment');
 
 Route::post('/home/{blog_id}/addBlog', 'Fun@addBlog');
+
+Route::post('/addblog/new', 'Fun@newBlog');
+
+Route::post('/admin/{id}/user', 'Fun@enableUser');
+
+Route::post('/admin/{blog_id}/blog', 'Fun@blogControl');
+
+Route::post('/admin/{comment_id}/comment', 'Fun@commentControl');

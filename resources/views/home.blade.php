@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+{{ checkUser() }}
+{{ checkAccess() }}
 <div class="container">
 <a href="javascript:history.go(-1)"><button class="btn btn-danger" style="float: right;">Go to Previous Page</button></a>
     <div class="row">
@@ -29,6 +31,7 @@
                     </div><!--panel-->
                 </div>
                 <div class="col-sm-7">
+                @if(isset($blog))
                     <form method="POST" action="{{ $blog->blog_id }}/addBlog">
                         {{ csrf_field() }}
                         <div class = "panel panel-default" style="min-width: 65%;">
@@ -40,22 +43,41 @@
                             </div><!--panel-body-->
                         </div><!--panel-->
                         <input type="hidden" name="blog_id" value="{{ $blog->blog_id }}">
-                        <button type="submit" name="delete" class="btn btn-outline-danger">Delete</button>
-                        <div class="dropdown" style = "width: 125px; float: right; margin-right: 25px;">
-                            <button class="btn btn-outline-success dropdown-toggle" type="button" data-toggle="dropdown">Publish Settings&nbsp;<span class="caret"></span></button>
+                        <button type="submit" name="delete" class="btn btn-danger">Delete</button>
+                        <div class="dropup" style = "width: 125px; float: right; margin-right: 17px;">
+                            <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown">Publish Settings&nbsp;<span class="caret"></span></button>
                             <ul class="dropdown-menu">
-                                <li><input type = "submit" value = "Publish" name="publish" class = "btn btn-outline-success" style = " display: inline-block; width: 100%;"/></li>
-                                <li><input type = "submit" value = "Unpublish" name="unpublish" id = "" class = "btn btn-outline-success" style = " display: inline-block; width: 100%;"/></li>
+                                <li><input type = "submit" value = "Publish" name="publish" class = "btn btn-success" style = " display: inline-block; width: 100%;"/></li>
+                                <li><input type = "submit" value = "Unpublish" name="unpublish" id = "" class = "btn btn-success" style = " display: inline-block; width: 100%;"/></li>
                             </ul>
                         </div>
+                    @if(strpos($_SERVER['REQUEST_URI'], '/home/'))
                         <button type="submit" name="saveButton" class="btn btn-outline-info" style="float: right; margin-right: 20px;">Save</button>
                     </form>
+                    @else
+                    </form>
+                        <a href="addblog"><button class="btn btn-info" style="float: right; margin-top: 20px;">Add Blog</button></a>
+                    @endif
+                @else
+                        <div class = "panel panel-default" style="min-width: 65%;">
+                            <div class = "panel-heading" style="background-color: #FFFFFF   ;">
+                                <input type="text" name="blog_title" placeholder="New Blog Title" value="" style="width: 100%; font-size: 30px; outline: none; border: 0;" placeholder="New blog title here...">
+                            </div>
+                            <div class = "panel-body" style = "width: 100%;">
+                                <textarea name="blog" placeholder="Write your new blog here..." style="width: 100%; font-size: 20px; margin-top: 12px; height: 275px; resize: vertical; outline: none; border: 0;" placeholder="Write your new blog here..."></textarea>
+                            </div><!--panel-body-->
+                        </div><!--panel-->
+                    @if(strpos($_SERVER['REQUEST_URI'], '/home/'))
+                        <button type="submit" name="saveButton" class="btn btn-outline-info" style="float: right; margin-right: 20px;">Save</button>
+                    @else
+                    </form>
+                        <a href="addblog"><button class="btn btn-info" style="float: right; margin-top: 20px;">Add Blog</button></a>
+                    @endif
+                @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-    <?PHP $pgTitle = $blog->blog_title; ?>
 
 @endsection

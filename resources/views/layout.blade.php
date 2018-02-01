@@ -18,8 +18,8 @@
         <script language = "javascript" type = "text/javascript" src = "../js/jquery-2.0.2.js"></script>
         <script language = "javascript" type = "text/javascript" src = "../js/jquery.min.js"></script>
     </head>
-    <body>
-        <div class="container">
+    <body style="min-width: 100%; min-height: 100%; position: relative;">
+        <div class="container" style="min-height: 100%; min-width: 100%; position: relative;">
 
             @yield('content')
             
