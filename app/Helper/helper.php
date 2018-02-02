@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Input;
 		if($user_type==1){
 			
 		}else{
-			die('not admin');
+			die('User Not Admin');
 			return redirect()->to('/home');
 		}
 	}

@@ -46,8 +46,12 @@ Route::post('/home/{blog_id}/addBlog', 'Fun@addBlog');
 
 Route::post('/addblog/new', 'Fun@newBlog');
 
+// Route::post('/admin/panel', 'Fun@adminPanel');
+
 Route::post('/admin/{id}/user', 'Fun@enableUser');
 
 Route::post('/admin/{blog_id}/blog', 'Fun@blogControl');
 
 Route::post('/admin/{comment_id}/comment', 'Fun@commentControl');
+
+// Route::post('/admin/{comment_id}/comment', 'Fun@blogControl');

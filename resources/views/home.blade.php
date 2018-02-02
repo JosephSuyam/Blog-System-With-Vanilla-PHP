@@ -18,21 +18,25 @@
                         <div class = "panel-heading" style="font-size: 30px;">
                             <center>My Blogs</center>
                         </div>
-                        <div class = "panel-body" style = "width: 100%;">
+                        <div class = "panel-body" style = "width: 100%; font-size: 20px;">
                             <!--SHOW MYBLOGS-->
                             @foreach($users as $blog)
-                                <li>
-                                    <a href="{{ (strpos($_SERVER['REQUEST_URI'], '/home/')) ? $blog->blog_id : 'home/'.$blog->blog_id }}">
-                                        {{ $blog->blog_title }}
-                                    </a>
-                                </li>
+                                @if(isset($blog))
+                                    <li>
+                                        <a href="{{ (strpos($_SERVER['REQUEST_URI'], '/home/')) ? $blog->blog_id : 'home/'.$blog->blog_id }}">
+                                            {{ $blog->blog_title }}
+                                        </a>
+                                    </li>
+                                @else
+                                    <span>You have no blogs yet</span>
+                                @endif
                             @endforeach
                         </div><!--panel-body-->
                     </div><!--panel-->
                 </div>
                 <div class="col-sm-7">
                 @if(isset($blog))
-                    <form method="POST" action="{{ $blog->blog_id }}/addBlog">
+                    <form method="POST" action="{{ (strpos($_SERVER['REQUEST_URI'], '/home/')) ? $blog->blog_id.'/addBlog' : 'home/'.$blog->blog_id.'/addBlog' }}">
                         {{ csrf_field() }}
                         <div class = "panel panel-default" style="min-width: 65%;">
                             <div class = "panel-heading" style="background-color: #FFFFFF   ;">
@@ -51,31 +55,33 @@
                                 <li><input type = "submit" value = "Unpublish" name="unpublish" id = "" class = "btn btn-success" style = " display: inline-block; width: 100%;"/></li>
                             </ul>
                         </div>
-                    @if(strpos($_SERVER['REQUEST_URI'], '/home/'))
                         <button type="submit" name="saveButton" class="btn btn-outline-info" style="float: right; margin-right: 20px;">Save</button>
                     </form>
-                    @else
-                    </form>
+                    @if(!strpos($_SERVER['REQUEST_URI'], '/home/'))
                         <a href="addblog"><button class="btn btn-info" style="float: right; margin-top: 20px;">Add Blog</button></a>
                     @endif
                 @else
+                    <!-- <a href="addblog"><button class="btn btn-info" style="float: right; margin-top: 20px;">Add Blog</button></a> -->
+                    <form method="POST" action="addblog/new">
+                        {{ csrf_field() }}
                         <div class = "panel panel-default" style="min-width: 65%;">
-                            <div class = "panel-heading" style="background-color: #FFFFFF   ;">
+                            <div class = "panel-heading" style="background-color: #FFFFFF;">
                                 <input type="text" name="blog_title" placeholder="New Blog Title" value="" style="width: 100%; font-size: 30px; outline: none; border: 0;" placeholder="New blog title here...">
                             </div>
                             <div class = "panel-body" style = "width: 100%;">
-                                <textarea name="blog" placeholder="Write your new blog here..." style="width: 100%; font-size: 20px; margin-top: 12px; height: 275px; resize: vertical; outline: none; border: 0;" placeholder="Write your new blog here..."></textarea>
+                                <textarea name="blog" placeholder="Write your new blog here..." style="width: 100%; font-size: 20px; margin-top: 12px; height: 250px; resize: vertical; outline: none; border: 0;" placeholder="Write your new blog here..."></textarea>
                             </div><!--panel-body-->
                         </div><!--panel-->
-                    @if(strpos($_SERVER['REQUEST_URI'], '/home/'))
-                        <button type="submit" name="saveButton" class="btn btn-outline-info" style="float: right; margin-right: 20px;">Save</button>
-                    @else
+                        <button type="submit" name="saveButton" class="btn btn-info" style="float: right; margin-right: ;">Save</button>
                     </form>
-                        <a href="addblog"><button class="btn btn-info" style="float: right; margin-top: 20px;">Add Blog</button></a>
-                    @endif
                 @endif
                 </div>
-            </div>
+            </div><br>
+            @if(Session::has('message'))
+                <div class="form-group"><center>
+                    <div class="alert alert-info" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>{{ Session::get('message') }}</strong></div>
+                </center></div>
+            @endif
         </div>
     </div>
 </div>

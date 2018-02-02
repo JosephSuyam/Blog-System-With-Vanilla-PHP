@@ -8,10 +8,9 @@
         </div>
         <div class = "col-sm-7" style="border-left: thick double #002259; height: 500px;">
             <h2>Latest Articles</h2>
-            <hr class="hrstyle">
             <!-- show publlish blog list here-->
  			@foreach($users as $blog)
-                <li>
+                <li style="font-size: 25px; margin-left: 15px;">
                     <a href="openblog/{{ $blog->blog_id }}">
                         {{ $blog->blog_title }}
                     </a>

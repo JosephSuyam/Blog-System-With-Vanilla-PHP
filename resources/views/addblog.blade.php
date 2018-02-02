@@ -4,7 +4,7 @@
 {{ checkUser() }}
 {{ checkAccess() }}
 <div class="container">
-<a href="javascript:history.go(-1)"><button class="btn btn-danger" style="float: right;">Go to Previous Page</button></a>
+<a href="home"><button class="btn btn-danger" style="float: right;">Go to Home Page</button></a>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             @if (session('status'))
@@ -18,7 +18,7 @@
                         <div class = "panel-heading" style="font-size: 30px;">
                             <center>My Blogs</center>
                         </div>
-                        <div class = "panel-body" style = "width: 100%;">
+                        <div class = "panel-body" style = "width: 100%; font-size: 20px;">
                             <!--SHOW MYBLOGS-->
                             @foreach($users as $blog)
                                 <li>
@@ -38,13 +38,18 @@
                                 <input type="text" name="blog_title" placeholder="New Blog Title" value="" style="width: 100%; font-size: 30px; outline: none; border: 0;" placeholder="New blog title here...">
                             </div>
                             <div class = "panel-body" style = "width: 100%;">
-                                <textarea name="blog" placeholder="Write your new blog here..." style="width: 100%; font-size: 20px; margin-top: 12px; height: 275px; resize: vertical; outline: none; border: 0;" placeholder="Write your new blog here..."></textarea>
+                                <textarea name="blog" placeholder="Write your new blog here..." style="width: 100%; font-size: 20px; margin-top: 12px; height: 250px; resize: vertical; outline: none; border: 0;" placeholder="Write your new blog here..."></textarea>
                             </div><!--panel-body-->
                         </div><!--panel-->
                         <button type="submit" name="saveButton" class="btn btn-info" style="float: right; margin-right: ;">Save</button>
                     </form>
                 </div>
             </div>
+            @if(Session::has('message'))
+                <div class="form-group"><center>
+                    <div class="alert alert-info" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>{{ Session::get('message') }}</strong></div>
+                </center></div>
+            @endif
         </div>
     </div>
 </div>

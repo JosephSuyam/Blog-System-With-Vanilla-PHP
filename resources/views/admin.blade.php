@@ -23,6 +23,11 @@
                             <button type="" name="users" class="btn btn-default" style="margin-bottom: 25px; width: 50%;" onclick="authors()">Authors</button><br>
                             <button type="" name="blog" class="btn btn-default" style="margin-bottom: 25px; width: 50%;" onclick="blogs()">Blogs</button><br>
                             <button type="" name="comment" class="btn btn-default" style="margin-bottom: 25px; width: 50%;" onclick="comments()">Comments</button>
+                            <!-- <form method="GET" action="panel">
+                                 <button type="submit" name="users" class="btn btn-default" style="margin-bottom: 25px; width: 50%;" onclick="">Authors</button><br>
+                                <button type="submit" name="blog" class="btn btn-default" style="margin-bottom: 25px; width: 50%;" onclick="">Blogs</button><br>
+                                <button type="submit" name="comment" class="btn btn-default" style="margin-bottom: 25px; width: 50%;" onclick="">Comments</button>
+                            </form> -->
                         </center></div><!--panel-body-->
                     </div><!--panel-->
                 </div>
@@ -43,6 +48,7 @@
                                         <input type="hidden" name="id" value="{{ $authors->id }}">
                                     </form>
                                 @endforeach
+                                {{ $users->links() }}
                             </div>
                             <div id="blogs" style="display: none;">
                                 @foreach($blog as $blogs)
@@ -57,6 +63,7 @@
                                         <input type="hidden" name="blog_id" value="{{ $blogs->blog_id }}">
                                     </form>
                                 @endforeach
+                                {{ $blog->links() }}
                             </div>
                             <div id="comments" style="display: none;">
                                 @foreach($comment as $comments)
@@ -67,11 +74,17 @@
                                         <input type="hidden" name="comment_id" value="{{ $comments->comment_id }}">
                                     </form>
                                 @endforeach
+                                {{ $comment->links() }}
                             </div>
                         </div><!--panel-body-->
                     </div><!--panel-->
                 </div>
             </div>
+            @if(Session::has('message'))
+                <div class="form-group"><center>
+                    <div class="alert alert-info" style="width: 50%;"><a href="author_panel.php" class="close" data-dismiss="alert">&times;</a><strong>{{ Session::get('message') }}</strong></div>
+                </center></div>
+            @endif
         </div>
     </div>
 </div>
